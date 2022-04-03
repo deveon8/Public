@@ -6,7 +6,7 @@ struct SV
 {
     char mssv[40];
     char ten[40];
-    float dtb;
+    double dtb;
 };
 
 struct node
@@ -33,7 +33,7 @@ node *CreateNode(SV x)
     p = new node;
     if (p == NULL)
     {
-      exit(1);
+        exit(1);
     }
     p->info = x;
     p->pNext = NULL;
@@ -52,6 +52,19 @@ void AddHead(list &ds, node *p)
         ds.pHead = p;
     }
 }
+void InsertAfterQ(list &ds, node *p, node *q)
+{
+    if (q != NULL)
+    {
+        p->pNext = q->pNext;
+        q->pNext = p;
+        if (ds.pTail == q)
+            ds.pTail = p;
+    }
+    else
+        AddHead(ds, p);
+}
+
 void AddTail(list &ds, node *p)
 {
     if (ds.pHead == NULL)
@@ -106,23 +119,28 @@ void PrintList(list ds)
 {
     node *p;
     p = ds.pHead;
+    if (p == NULL)
+    {
+        cout << 0;
+        return;
+    }
     while (p != NULL)
     {
-        cout <<"Ten SV:"<<p->info.ten << endl;
-        cout <<"MSSV:"<< p->info.mssv << endl;
-        cout <<"DTB:"<<p->info.dtb << endl;
+        cout << "Ten SV:" << p->info.ten << endl;
+        cout << "MSSV:" << p->info.mssv << endl;
+        cout << "DTB:" << p->info.dtb << endl;
         p = p->pNext;
     }
 }
 
 node *Search(list ds, char x[])
 {
-    cout<<"Nhap mssv SV can tim: ";
-    cin>>x;
+    cout << "Nhap mssv SV can tim: ";
+    cin >> x;
     fflush(stdin);
     node *p;
     p = ds.pHead;
-    while ((p != NULL) && ((p->info.mssv) != x))
+    while ((p != NULL) && strcmp(p->info.mssv, x) != 0)
         p = p->pNext;
     return p;
 }
@@ -142,18 +160,18 @@ void Arrange(list &ds)
             }
         }
     }
-    PrintList(ds);
+     PrintList(ds);
 }
 void DeleteAfterQ(list &ds, node *q)
 {
     node *p;
     if (q != NULL)
     {
-        p = q->pNext;  
-        if (p != NULL) 
+        p = q->pNext;
+        if (p != NULL)
         {
-            if (p == ds.pTail) 
-                ds.pTail = q;  
+            if (p == ds.pTail)
+                ds.pTail = q;
             q->pNext = p->pNext;
             delete p;
         }
@@ -196,9 +214,17 @@ int RemoveX(list &ds, char x[])
 }
 void display(node *p)
 {
-    cout << "Ten SV:"<<p->info.ten << endl;
-    cout << "Ten MSSV:"<<p->info.mssv << endl;
-    cout << "DTB:"<<p->info.dtb << endl;
+    if (p == NULL)
+    {
+        cout << 0;
+        return;
+    }
+    fflush(stdin);
+    cout << "Ten SV:" << p->info.ten << endl;
+    fflush(stdin);
+    cout << "Ten MSSV:" << p->info.mssv << endl;
+    fflush(stdin);
+    cout << "DTB:" << p->info.dtb << endl;
 }
 void Filter(list ds)
 {
@@ -217,70 +243,118 @@ void XepLoai(list ds)
     p = ds.pHead;
     while (p != NULL)
     {
-        if (p->info.dtb <= 3.6)
+        if (p->info.dtb <= 3.6 || p->info.dtb < 5.0) //đề bài không có xếp hạng từ 3.7 - 4.9 => thành yếu
         {
-            cout << "Xep Loai: Yeu" << endl;
+            cout << "Xep Loai: Yeu"
+                 << endl;
             display(p);
         }
         else if (p->info.dtb >= 5.0 && p->info.dtb < 6.5)
         {
-            cout << "Xep Loai: TB" << endl;
+            cout << "Xep Loai: TB"
+                 << endl;
             display(p);
         }
         else if (p->info.dtb >= 6.5 && p->info.dtb < 7.0)
         {
-            cout << "Xep Loai: TBK" << endl;
+            cout << "Xep Loai: TBK"
+                 << endl;
             display(p);
         }
         else if (p->info.dtb >= 7.0 && p->info.dtb < 8.0)
         {
-            cout << "Xep Loai: Kha" << endl;
+            cout << "Xep Loai: Kha"
+                 << endl;
             display(p);
         }
         else if (p->info.dtb >= 8.0 && p->info.dtb < 9.0)
         {
-            cout << "Xep Loai: Gioi" << endl;
+            cout << "Xep Loai: Gioi"
+                 << endl;
             display(p);
         }
         else
         {
-            cout << "Xep loai: XS";
+            cout << "Xep loai: XS\n";
             display(p);
         }
         p = p->pNext;
     }
 }
+void Finding(list &ds, node *t)
+{
+    fflush(stdin);
+    node *p, *Before_p;
+    p = ds.pHead;
+    if (t->info.dtb < p->info.dtb)
+    {
+        AddHead(ds, t);
+        return;
+    }
+    else
+        while (p != NULL && (p->info.dtb <= t->info.dtb))
+        {
+            Before_p = p;
+            p = p->pNext;
+        }
+    InsertAfterQ(ds, t, Before_p);
+}
+
 int main()
 {
     char a[40];
     list ds;
-    node *p,*q;
+    node *p, *q;
     SV x;
     char chon;
     Create(ds);
-    getInfo(ds); 
-    cin>>chon;
-        switch(chon)
-        {
-            case '2': { PrintList(ds); break;}
-            case '3': { display(Search(ds,a)); break;}
-            case '4': { cout<<RemoveX(ds,a); break;}
-            case '5': { Filter(ds); break;}
-            case '6': { XepLoai(ds); break;}
-            case '7': { Arrange(ds);break;}
-            case '8':
-                    {
-                        SV them;
-                        cout<<"\nNhap thong tin sv can them: ";
-                        getinfo(them);
-                        node *t= CreateNode(them);
-                        AddTail(ds,t);
-                        Arrange(ds);
-                        cout<<"DS sau khi them"<<endl;
-                        PrintList(ds);
-                        break;
-                    }
-    return 0;
-
-}
+    getInfo(ds);
+    cin >> chon;
+    switch (chon)
+    {
+    case '2':
+    {
+        PrintList(ds);
+        break;
+    }
+    case '3':
+    {
+        display(Search(ds, a));
+        break;
+    }
+    case '4':
+    {
+        cout << RemoveX(ds, a);
+        break;
+    }
+    case '5':
+    {
+        Filter(ds);
+        break;
+    }
+    case '6':
+    {
+        XepLoai(ds);
+        break;
+    }
+    case '7':
+    {
+        Arrange(ds);
+        break;
+    }
+    case '8':
+    {
+        SV them;
+        cout << "\nNhap thong tin sv can them: \n";
+        getinfo(them);
+        node *t = CreateNode(them);
+        cout << "Sap xep danh sach truoc khi them: \n";
+        Arrange(ds);
+        Finding(ds, t);
+        cout << "DS sau khi them" << endl;
+        PrintList(ds);
+        break;
+    }
+        return 0;
+    }
 }
