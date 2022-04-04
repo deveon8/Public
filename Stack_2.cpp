@@ -54,15 +54,12 @@ int Pop(Stack &s, int x = 0)
 }
 void Calculator(Stack &s, int coSo, int num)
 {
-    if (coSo == 2 )
         while (num != 0)
         {
             int x = num % coSo;
             Push(s, x);
             num /= coSo;
         }
-    else
-        cout << "Co so khong hop le.";
     
     while (isEmpty(s)==false)
     {
