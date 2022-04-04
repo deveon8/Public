@@ -54,7 +54,7 @@ int Pop(Stack &s, int x = 0)
 }
 void Calculator(Stack &s, int coSo, int num)
 {
-    if (coSo == 2 || coSo == 8 || coSo == 16)
+    if (coSo == 2 )
         while (num != 0)
         {
             int x = num % coSo;
